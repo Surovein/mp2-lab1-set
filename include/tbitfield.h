@@ -11,21 +11,25 @@
 #include <iostream>
 
 using namespace std;
-
+struct Index
+{
+	int Index_Mem;
+	int Index_in_Mem;
+};
 typedef unsigned int TELEM;
 
 class TBitField
 {
 private:
-  int  BitLen; // длина битового поля - макс. к-во битов
+  int  BitLen; // длина битового поля - макс. к-во битов длина характеристического вектора (сколько элементов в универсе)
   TELEM *pMem; // память для представления битового поля
   int  MemLen; // к-во эл-тов Мем для представления бит.поля
 
   // методы реализации
-  int   GetMemIndex(const int n) const; // индекс в pМем для бита n       (#О2)
+  struct Index  GetMemIndex(const unsigned int n) const; // индекс в pМем для бита n       (#О2)
   TELEM GetMemMask (const int n) const; // битовая маска для бита n       (#О3)
 public:
-  TBitField(int len);                //                                   (#О1)
+  TBitField(int unsigned len);                //                                   (#О1)
   TBitField(const TBitField &bf);    //                                   (#П1)
   ~TBitField();                      //                                    (#С)
 
@@ -40,8 +44,8 @@ public:
   TBitField& operator=(const TBitField &bf); // присваивание              (#П3)
   TBitField  operator|(const TBitField &bf); // операция "или"            (#О6)
   TBitField  operator&(const TBitField &bf); // операция "и"              (#Л2)
-  int operator==(const TBitField& bf) const; // сравнение                 (#О5)
-  int operator!=(const TBitField& bf) const; // сравнение
+  bool operator==(const TBitField& bf) const; // сравнение                 (#О5)
+  bool operator!=(const TBitField& bf) const; // сравнение
     
   TBitField  operator~(void);                // отрицание                  (#С)
 
