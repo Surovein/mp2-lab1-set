@@ -8,11 +8,15 @@
 
 #define BITS_IN_ONE_MEM (sizeof(TELEM) * 8)
 
-TBitField::TBitField(unsigned int len)
+TBitField::TBitField(int len)
 {
+	if (len <= 0)
+	{
+		throw 1;
+	}
 	BitLen = len;
 	MemLen = (len + BITS_IN_ONE_MEM - 1) / BITS_IN_ONE_MEM;
-	TELEM* pMem = new unsigned int[MemLen];// len = bitlen
+	pMem = new TELEM[MemLen];// len = bitlen
 	for (int i = 0; i < MemLen; i++)
 	{
 		pMem[i] = 0;
@@ -23,7 +27,7 @@ TBitField::TBitField(const TBitField& bf) // конструктор копиро
 {
 	BitLen = bf.BitLen;
 	MemLen = (BitLen + BITS_IN_ONE_MEM - 1) / BITS_IN_ONE_MEM;// 8*sizeof(TELEM)
-	TELEM* pMem = new unsigned int[MemLen];
+	pMem = new TELEM [MemLen];
 	for (int i = 0; i < bf.MemLen; i++)			///????? указатель
 	{
 		pMem[i] = bf.pMem[i];
@@ -35,7 +39,7 @@ TBitField::~TBitField()
 	delete[] pMem;
 }
 
-struct Index TBitField::GetMemIndex(const unsigned int n) const // индекс Мем для бита n
+struct Index TBitField::GetMemIndex(const int n) const // индекс Мем для бита n
 {
 	struct Index I;
 	I.Index_Mem = n / BITS_IN_ONE_MEM;
@@ -61,7 +65,7 @@ void TBitField::SetBit(const int n) // установить бит
 {
 	if ((n < 0) || (n > BitLen))
 		throw 2;
-	TELEM mask, struct Index I;
+	TELEM mask; Index I;
 	mask = GetMemMask(n);
 	I = GetMemIndex(n);
 	pMem[I.Index_Mem] |= mask;
@@ -69,7 +73,15 @@ void TBitField::SetBit(const int n) // установить бит
 
 void TBitField::ClrBit(const int n) // очистить бит
 {
-	TELEM mask, struct Index I;
+	if (n < 0)
+	{
+		throw 3;
+	}
+	if (n > BitLen)
+	{
+		throw 4;
+	}
+	TELEM mask; Index I;
 	mask = GetMemMask(n);
 	I = GetMemIndex(n);
 	pMem[I.Index_Mem] = pMem[I.Index_Mem] & (~mask);
@@ -77,7 +89,15 @@ void TBitField::ClrBit(const int n) // очистить бит
 
 int TBitField::GetBit(const int n) const // получить значение бита
 {
-	TELEM mask, struct Index I;
+	if (n < 0)
+	{
+		throw 3;
+	}
+	if (n > BitLen)
+	{
+		throw 4;
+	}
+	TELEM mask; Index I;
 	mask = GetMemMask(n);
 	I = GetMemIndex(n);
 	if ((pMem[I.Index_Mem] & mask) != 0)
@@ -94,6 +114,7 @@ TBitField& TBitField::operator=(const TBitField & bf) // присваивани�
 	delete[] pMem;
 	BitLen = bf.BitLen;
 	MemLen = bf.MemLen;
+	pMem = new TELEM[MemLen];
 	for (int i = 0; i < bf.MemLen; i++)
 	{
 		pMem[i] = bf.pMem[i];
@@ -195,9 +216,16 @@ TBitField TBitField::operator~(void) // отрицание
 {
 	int i, len = BitLen;
 	TBitField temp(len);
-	for (int i = 0; i < MemLen; i++)
+	for (int i = 0; i < MemLen - 1; i++)
 	{
 		temp.pMem[i] = ~pMem[i];
+	}
+	for (int i = BITS_IN_ONE_MEM * (MemLen); i <= BitLen; i++)// работаем только с битами универса
+	{
+		if (GetBit(i) == 0)
+		{
+			temp.SetBit(i);
+		}
 	}
 	return temp;
 }

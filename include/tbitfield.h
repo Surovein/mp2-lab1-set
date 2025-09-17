@@ -26,10 +26,10 @@ private:
   int  MemLen; // к-во эл-тов Мем для представления бит.поля
 
   // методы реализации
-  struct Index  GetMemIndex(const unsigned int n) const; // индекс в pМем для бита n       (#О2)
+  struct Index  GetMemIndex(const int n) const; // индекс в pМем для бита n       (#О2)
   TELEM GetMemMask (const int n) const; // битовая маска для бита n       (#О3)
 public:
-  TBitField(int unsigned len);                //                                   (#О1)
+  TBitField(int len);                //                                   (#О1)
   TBitField(const TBitField &bf);    //                                   (#П1)
   ~TBitField();                      //                                    (#С)
 
