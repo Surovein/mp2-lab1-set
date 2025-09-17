@@ -217,7 +217,6 @@ TEST(TBitField, can_invert_bitfield)
   for (int i = 0; i < size; i++)
 	  expNegBf.SetBit(i);
   expNegBf.ClrBit(100);
-
   EXPECT_EQ(expNegBf, negBf);
 }
 
@@ -268,8 +267,9 @@ TEST(TBitField, can_invert_many_random_bits_bitfield)
   for (unsigned int i = 0; i < bits.size(); i++)
     bf.SetBit(bits[i]);
 
+  //cout << bf<<endl;
   negBf = ~bf;
-
+ // cout << negBf<<endl;
   for(int i = 0; i < size; i++)
     expNegBf.SetBit(i);
   for (unsigned int i = 0; i < bits.size(); i++)
